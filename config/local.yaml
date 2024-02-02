@@ -1,0 +1,11 @@
+env: "local"
+
+db:
+  connection: "pgsql"
+  user: "user"
+  password: "password"
+  database: "exception-control"
+
+grpc:
+  port: 80
+  timeout: 1h
