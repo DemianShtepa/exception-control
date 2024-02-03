@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/DemianShtepa/exception-control/internal/app"
 	"github.com/DemianShtepa/exception-control/internal/config"
 	"log/slog"
 	"os"
@@ -18,6 +19,9 @@ func main() {
 	logger := setupLogger(cfg.Env)
 
 	logger.Info("starting application", slog.String("env", cfg.Env))
+
+	application := app.New(logger, cfg.GRPC.Port)
+	application.GRPCServer.MustRun()
 }
 
 func setupLogger(env string) *slog.Logger {

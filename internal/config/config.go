@@ -13,9 +13,14 @@ type DBConfig struct {
 	Database   string `yaml:"database" env:"DB_DATABASE" env-required:"true"`
 }
 
+type GRPCConfig struct {
+	Port int `yaml:"port" env:"GRPC_PORT" env-required:"true"`
+}
+
 type Config struct {
-	Env string   `yaml:"env" env:"ENV" env-default:"local"`
-	DB  DBConfig `yaml:"db"`
+	Env  string     `yaml:"env" env:"ENV" env-default:"local"`
+	DB   DBConfig   `yaml:"db"`
+	GRPC GRPCConfig `yaml:"grpc"`
 }
 
 func MustLoad() *Config {
