@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"github.com/DemianShtepa/exception-control/internal/app"
 	"github.com/DemianShtepa/exception-control/internal/config"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 const (
@@ -14,14 +17,21 @@ const (
 )
 
 func main() {
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
+	defer cancel()
+
 	cfg := config.MustLoad()
 
 	logger := setupLogger(cfg.Env)
 
 	logger.Info("starting application", slog.String("env", cfg.Env))
 
-	application := app.New(logger, cfg.GRPC.Port)
-	application.GRPCServer.MustRun()
+	application := app.MustInit(ctx, logger, *cfg)
+	go application.MustRun()
+
+	<-ctx.Done()
+
+	application.Stop()
 }
 
 func setupLogger(env string) *slog.Logger {

@@ -11,6 +11,7 @@ type DBConfig struct {
 	User       string `yaml:"user" env:"DB_USER" env-required:"true"`
 	Password   string `yaml:"password" env:"DB_PASSWORD" env-required:"true"`
 	Database   string `yaml:"database" env:"DB_DATABASE" env-required:"true"`
+	Port       int    `yaml:"port" env:"DB_PORT" env-required:"true"`
 }
 
 type GRPCConfig struct {
@@ -18,9 +19,10 @@ type GRPCConfig struct {
 }
 
 type Config struct {
-	Env  string     `yaml:"env" env:"ENV" env-default:"local"`
-	DB   DBConfig   `yaml:"db"`
-	GRPC GRPCConfig `yaml:"grpc"`
+	Env    string     `yaml:"env" env:"ENV" env-default:"local"`
+	DB     DBConfig   `yaml:"db"`
+	GRPC   GRPCConfig `yaml:"grpc"`
+	Secret string     `yaml:"secret" env:"SECRET" env-required:"true"`
 }
 
 func MustLoad() *Config {

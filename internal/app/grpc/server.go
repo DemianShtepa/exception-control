@@ -2,7 +2,13 @@ package grpc
 
 import (
 	"fmt"
+	"github.com/DemianShtepa/exception-control/internal/app/database"
+	"github.com/DemianShtepa/exception-control/internal/app/database/sqlc"
 	"github.com/DemianShtepa/exception-control/internal/grpc/auth"
+	"github.com/DemianShtepa/exception-control/internal/repository/user/pgsql"
+	authservice "github.com/DemianShtepa/exception-control/internal/services/auth"
+	"github.com/DemianShtepa/exception-control/internal/services/hash"
+	"github.com/DemianShtepa/exception-control/internal/services/token"
 	"google.golang.org/grpc"
 	"log/slog"
 	"net"
@@ -14,10 +20,14 @@ type Server struct {
 	port       int
 }
 
-func New(log *slog.Logger, port int) *Server {
+func New(log *slog.Logger, db *database.Database, port int, secret string) *Server {
 	gRPCServer := grpc.NewServer()
 
-	auth.Register(gRPCServer)
+	queries := sqlc.New(db.Pool)
+	auth.Register(
+		gRPCServer,
+		authservice.NewAuth(log, pgsql.NewRepository(db.Pool, queries), &hash.Hasher{}, token.NewGenerator(secret)),
+	)
 
 	return &Server{
 		log:        log,
